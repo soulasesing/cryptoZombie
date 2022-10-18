@@ -4,6 +4,9 @@ pragma solidity >=0.7.0 <0.9.1;
 import "./ZombieHelper.sol";
 
 contract ZombieAttack is ZombieHelper {
+    using SafeMath for uint256;
+    using SafeMath32 for uint32;
+    using SafeMath16 for uint16;
 
 
 //var to septup the probability of win
