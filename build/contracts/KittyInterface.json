@@ -75,7 +75,7 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity >= 0.7.0 < 0.9.1;\nimport \"./ZombieFactory.sol\";\n\n//declare a interface to use the CryptoKitties contract \ninterface  KittyInterface  {\n  function getKitty(uint256 _id) external view returns (\n    bool isGestating,\n    bool isReady,\n    uint256 cooldownIndex,\n    uint256 nextActionAt,\n    uint256 siringWithId,\n    uint256 birthTime,\n    uint256 matronId,\n    uint256 sireId,\n    uint256 generation,\n    uint256 genes\n  );\n}\n\n\n//this contract inheritance from ZombieFactory\ncontract ZombieFeeding is ZombieFactory{\n    //cryptoKitty Address\n    //address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;\n    \n    //declate contract variable\n    KittyInterface kittyContract;\n\n    //create modifiers to validete the zombie's owners\n    modifier onlyOwnerOf(uint _zombieId){\n        require(msg.sender == zombieToOwner[_zombieId]);\n        _;\n    }\n    \n    //this function permit changes the adress of the kitty smarcontract\n    function setKittyContractAddress (address _address) external onlyOwner{\n\n        kittyContract = KittyInterface(_address);\n\n    }\n// function the set the cooldown of the zombies\n    function _triggerCooldown(Zombie storage _zombie) internal{\n        _zombie.readyTime = uint32(block.timestamp + cooldownTime);\n\n    }\n\n// function to put ready my zombie\n    function _isReady(Zombie storage _zombie) internal view returns(bool){\n        return(_zombie.readyTime <= block.timestamp);\n    }\n\n\n    function feedAndMultiply (uint _zombieId, uint _targetDna, string memory _species ) internal onlyOwnerOf(_zombieId) {\n\n        //validate if this is ours zombies no ones can feed my zombies\n       // require(msg.sender == zombieToOwner[_zombieId]);\n        Zombie storage myZombie = zombies[_zombieId];\n        //validate if the zombie is ready \n        require(_isReady(myZombie));\n        //to make sure ours zombies only take the last 16 digits\n        _targetDna = _targetDna % dnaModulus;\n        //calculate the new DNA zombie\n        uint newDna = (_targetDna + myZombie.dna) / 2;\n        //compare hashes _species with string kitty \n        if(keccak256(abi.encodePacked(_species)) == keccak256(abi.encodePacked(\"kitty\"))){\n            //add digits 99 to DNA \n            newDna = newDna - newDna % 100 + 99;\n        //we call the function _triggerCooldown to put my zombie down \n        _triggerCooldown(myZombie);\n        }\n\n        //call the function to create a new zombie\n        ZombieFactory._createZombie(\"NoName\", newDna);\n\n    }\n\n    //function to get de DNA from cryptokitty Contract \n    function feedOnKitty (uint _zombieId, uint _kittyId) public{\n        uint256 kittyDna;\n\n        //call the kitty function to take the genes\n        (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);\n        //call the function to feed my zombie with a crypto kitty\n        feedAndMultiply(_zombieId, kittyDna, \"kitty\");\n\n\n    }\n\n    \n}\n\n",
-  "sourcePath": "/Users/amilcar/cryptoZombies/cryptoZombies/contracts/ZombieFeeding.sol",
+  "sourcePath": "/Users/amilcar/cryptoZombies/cryptoZombiesRepo/cryptoZombie/contracts/ZombieFeeding.sol",
   "ast": {
     "absolutePath": "project:/contracts/ZombieFeeding.sol",
     "exportedSymbols": {
@@ -83,16 +83,16 @@
         199
       ],
       "Ownable": [
-        493
+        750
       ],
       "SafeMath": [
-        596
+        853
       ],
       "SafeMath16": [
-        790
+        1047
       ],
       "SafeMath32": [
-        693
+        950
       ],
       "ZombieFactory": [
         170
@@ -501,7 +501,7 @@
         "linearizedBaseContracts": [
           372,
           170,
-          493
+          750
         ],
         "name": "ZombieFeeding",
         "nameLocation": "531:13:1",
@@ -820,7 +820,7 @@
                   "id": 223,
                   "name": "onlyOwner",
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 420,
+                  "referencedDeclaration": 677,
                   "src": "1044:9:1"
                 },
                 "nodeType": "ModifierInvocation",
@@ -2673,7 +2673,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.10",
-  "updatedAt": "2022-10-18T17:08:26.962Z",
+  "updatedAt": "2022-10-19T22:40:58.031Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
